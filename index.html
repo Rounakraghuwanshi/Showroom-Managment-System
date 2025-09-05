@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shree Ram Showroom Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #F3F3E0;
+            color: #333;
+        }
+
+        header {
+            background-color: #27548A;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 30px;
+        }
+
+        header .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header .logo img {
+            width: 40px;
+            height: 40px;
+        }
+
+        nav a {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .card {
+            background-color: #A9B5DF;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            background-color: #7886C7;
+        }
+
+        footer {
+            background-color: #27548A;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        footer .social-icons img {
+            width: 25px;
+            margin: 5px;
+        }
+
+        .form-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 1px solid #ccc;
+            z-index: 10;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .form-popup input {
+            display: block;
+            margin: 10px 0;
+            width: 100%;
+            padding: 8px;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="overlay" id="overlay" onclick="closeForm()"></div>
+    <header>
+        <div class="logo">
+            <img src="https://img.icons8.com/emoji/48/shinto-shrine.png" alt="Shree Ram" />
+            <img src="https://img.icons8.com/ios-filled/50/car--v1.png" alt="Car" />
+        </div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+            <a href="#">Login / Signup</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card" onclick="openForm('showroom')">Add Showroom</div>
+        <div class="card" onclick="openForm('employee')">Add Employee</div>
+        <div class="card" onclick="openForm('car')">Add Car</div>
+        <div class="card" onclick="displayData('showroom')">Get Showroom</div>
+        <div class="card" onclick="displayData('employee')">Get Employees</div>
+        <div class="card" onclick="displayData('car')">Get Cars</div>
+    </div>
+
+    <div class="form-popup" id="form-popup">
+        <h3 id="form-title">Form</h3>
+        <form id="popup-form">
+            <!-- Dynamic Inputs -->
+        </form>
+    </div>
+
+    <footer>
+        <p>About: This Showroom Management System lets you manage showrooms, employees, and cars easily.</p>
+        <p>Contact us: showroom@example.com | 1234 Market Street, NY</p>
+        <div class="social-icons">
+            <img src="https://img.icons8.com/ios-filled/50/facebook--v1.png" alt="Facebook" />
+            <img src="https://img.icons8.com/ios-filled/50/twitter--v1.png" alt="Twitter" />
+            <img src="https://img.icons8.com/ios-filled/50/instagram-new.png" alt="Instagram" />
+        </div>
+    </footer>
+
+    <script>
+        const overlay = document.getElementById('overlay');
+        const popup = document.getElementById('form-popup');
+        const form = document.getElementById('popup-form');
+        const formTitle = document.getElementById('form-title');
+
+        const dataStore = {
+            showroom: [],
+            employee: [],
+            car: []
+        };
+
+        function openForm(type) {
+            form.innerHTML = '';
+            formTitle.textContent = `Add ${type}`;
+            let fields = [];
+            if (type === 'showroom') {
+                fields = ['Showroom Name', 'Address', 'Manager Name', 'Total Cars'];
+            } else if (type === 'employee') {
+                fields = ['Name', 'Age', 'Department', 'Showroom Name'];
+            } else if (type === 'car') {
+                fields = ['Car Name', 'Color', 'Fuel Type', 'Price', 'Type', 'Transmission'];
+            }
+            fields.forEach(f => {
+                const input = document.createElement('input');
+                input.placeholder = f;
+                input.name = f;
+                form.appendChild(input);
+            });
+            const submitBtn = document.createElement('input');
+            submitBtn.type = 'submit';
+            submitBtn.value = 'Save';
+            form.appendChild(submitBtn);
+            form.onsubmit = e => {
+                e.preventDefault();
+                const inputs = [...form.querySelectorAll('input[name]')];
+                const values = inputs.map(i => i.value);
+                dataStore[type].push(values);
+                closeForm();
+                alert(`${type} saved.`);
+            };
+            overlay.style.display = 'block';
+            popup.style.display = 'block';
+        }
+
+        function closeForm() {
+            popup.style.display = 'none';
+            overlay.style.display = 'none';
+        }
+
+        function displayData(type) {
+            let html = `${type.toUpperCase()} DATA:\n`;
+            dataStore[type].forEach((entry, index) => {
+                html += `\n${index + 1}. ` + entry.join(', ');
+            });
+            alert(html);
+        }
+    </script>
+</body>
+
+</html>
